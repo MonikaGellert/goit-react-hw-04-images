@@ -1,57 +1,23 @@
-import React, { useState, useEffect } from 'react';
-import s from './ImageGallery.module.css';
-import ImageGalleryItem from 'components/ImageGalleryItem/ImageGalleryItem';
-import Modal from 'components/Modal/Modal';
-import { nanoid } from 'nanoid';
-import PropTypes from 'prop-types';
+import React, { Component } from 'react';
+import ImageGalleryItem from './../ImageGalleryItem/ImageGalleryItem.jsx';
+import styles from './ImageGallery.module.css'; // Importuj moduł CSS
 
-export default function ImageGallery({ images }) {
-  const [showModal, setShowModal] = useState(false);
-  const [bigPic, setBigPic] = useState(null);
-
-  useEffect(() => {
-    document.addEventListener('click', e => {
-      if (e.target.nodeName !== 'IMG') {
-        return;
-      }
-      let picture = images.filter(obj => {
-        return obj.id === parseInt(e.target.alt);
-      });
-      if (!picture.length) {
-        return;
-      }
-      setBigPic(picture[0].largeImageURL);
-    });
-  }, [bigPic, images]);
-
-  const toggleModal = () => {
-    setShowModal(prevShow => !prevShow);
-  };
-
-  return (
-    <>
-      <ul className={s.gallery} onClick={toggleModal}>
-        {images.map(img => {
-          return (
+class ImageGallery extends Component {
+  render() {
+    return (
+      <div>
+        <ul className={styles.ImageGallery}>
+          {this.props.images.map(image => (
             <ImageGalleryItem
-              key={nanoid()}
-              smallImgURL={img.webformatURL}
-              id={img.id}
+              key={image.id}
+              image={image}
+              onImageClick={this.props.onImageClick}
             />
-          );
-        })}
-      </ul>
-      {showModal && bigPic && <Modal onClose={toggleModal} pic={bigPic} />}
-    </>
-  );
+          ))}
+        </ul>
+      </div>
+    );
+  }
 }
 
-ImageGallery.propTypes = {
-  images: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.number.isRequired,
-      largeImageURL: PropTypes.string.isRequired,
-      webformatURL: PropTypes.string.isRequired,
-    })
-  ),
-};
+export default ImageGallery;
